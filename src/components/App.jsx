@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { addContact, deleteContact, setFilter } from './contactsSlice';
-import styles from './App.css';
+import { addContact, deleteContact, setFilter } from '../store/contactsSlice';
+import './App.css'; 
 
 function App() {
   const contacts = useSelector(state => state.contacts.contacts);
@@ -13,7 +13,8 @@ function App() {
   const handleNameChange = event => setName(event.target.value);
   const handlePhoneChange = event => setPhone(event.target.value);
 
-  const handleAddContact = () => {
+  const handleAddContact = event => {
+    event.preventDefault();
     dispatch(addContact({ id: Date.now(), name, phone }));
     setName('');
     setPhone('');
@@ -27,24 +28,32 @@ function App() {
     dispatch(setFilter(event.target.value));
   };
 
+  const handleFormSubmit = event => {
+    event.preventDefault();
+    handleAddContact(event);
+  };
+
   const filteredContacts = contacts.filter(contact =>
     contact.name.toLowerCase().includes(filter.toLowerCase())
   );
 
   return (
-    <div className={styles.container}>
+    <div className="container"> 
       <h1>Phonebook</h1>
-      <input type="text" value={filter} onChange={handleFilterChange} placeholder="Filter contacts" />
-      <h2>Add new contact</h2>
-      <input type="text" value={name} onChange={handleNameChange} placeholder="Name" />
-      <input type="text" value={phone} onChange={handlePhoneChange} placeholder="Phone" />
-      <button onClick={handleAddContact}>Add Contact</button>
+      <form onSubmit={handleFormSubmit}>
+        <div className="inputGroup">
+          <input className="input" type="text" value={name} onChange={handleNameChange} placeholder="Name" />
+          <input className="input" type="text" value={phone} onChange={handlePhoneChange} placeholder="Phone" />
+        </div>
+        <button className="button" type="submit">Add Contact</button> 
+      </form>
+      <input className="input" type="text" value={filter} onChange={handleFilterChange} placeholder="Filter contacts" />
       <h2>Contacts</h2>
       <ul>
         {filteredContacts.map(contact => (
           <li key={contact.id}>
             {contact.name} - {contact.phone}
-            <button onClick={() => handleDeleteContact(contact.id)}>Delete</button>
+            <button className="button-delete" onClick={() => handleDeleteContact(contact.id)}>Delete</button>
           </li>
         ))}
       </ul>
